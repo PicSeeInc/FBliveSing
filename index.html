@@ -1,0 +1,159 @@
+<!-- CONFIG - by SocialWall.me
+1/ Update your Background (:16)
+2/ Update your Logo (:87)
+3/ Update your Title (:88)
+4/ Update your Access Token (:105)
+5/ Update your Post ID (:106) -->
+<!-- Original source code: https://gist.github.com/anonymous/7073ea6c601f28aa65e5a077ef875526 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>My Facebook Reactions </title>
+	<style>
+        html {
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
+          margin:0;
+          padding:0;
+          background: url("sing.jpg") no-repeat center fixed; /* YOUR BACKGROUND URL HERE */
+          -webkit-background-size: cover; 
+          background-size: cover; 
+        }
+		*, *:before, *:after {
+		  box-sizing: inherit;
+		}
+		body{
+			margin: 0;
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3)
+		}
+        header { 
+            text-align: center; 
+        }
+        header .logo { 
+            position: relative; 
+            margin:100px auto 20px; 
+            width:250px;
+        }
+        h1 { 
+            text-align: center; 
+            width:100%; 
+            font-size: 50px; 
+            padding: 30px 0; 
+            margin:0; 
+            color:#fff;
+        }
+		#wrap{
+			position: relative;
+			margin: 0px auto;
+			width: 1280px;
+			height: 720px;
+		}
+        .tc { 
+            text-align: center; 
+            font-size: 3rem; 
+            font-weight: bold; 
+
+        }
+        .wf { 
+            width: 28%; 
+        }
+        .wf img.illu {
+            width:80%;
+            display: block;
+            margin: 20px auto;
+            position: relative;
+        }
+        .wf img.emoji  {
+            width:0px;
+            display: inline-block;
+            margin-right:10px;
+        }
+        .wfb { 
+            width: 70%; 
+            float:left; 
+            margin:0;
+            margin-top: 250px;
+            background: transparent;
+            text-align: right; 
+            overflow: hidden;
+            height: 60px;
+            text-shadow: 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff;
+        }
+        .wfg { 
+            width: 70%; 
+            float:right; 
+            margin:10px 2%;
+            background: transparent; 
+            text-align: right; 
+            overflow: hidden;
+            height: 60px;
+            text-shadow: 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff, 0px 0px 5px #fff;
+        }
+	</style>
+</head>
+<body>
+    <header>
+        <img class="logo" src=""> <!-- YOUR LOGO URL HERE -->
+        <!--h1>PicSee Live Reactions</h1--> <!-- YOUR TITLE HERE -->     
+    </header>
+    <!-- REACTIONS -->
+	<div class="tc wfb boy"><img style="display: inline-block; margin-right:0px;" ><text class="counter" style="color: blue"></text></div>
+    <div class="tc wfg girl"><img style="display: inline-block; margin-right:0px;" ><text class="counter" style="color: red">></text></div>
+
+
+    <script src="jquery.min.js"></script>
+    <script src="lodash.min.js"></script>
+    <script>
+    "use strict";
+    var access_token = 'EAACEdEose0cBADqwi68dZAi7rzSdmzu2BbJNNxQi62p9LJqaHVHq1uWzuMyR3NKALNzZCcxYisC0Gd5NAofaqZAo6K2PzcB6fNwUyy1Nid31P7nKXHnZBUwoPf4rkdYUw1TnIcud2Ps88ZAjKSp3yi39VGFjQ29g0Ob3RMOqI5txy5aAEcZAcKfcpj8H75y4gZD'; // PASTE HERE YOUR FACEBOOK ACCESS TOKEN
+    var postID = '1361079140577998'; // PASTE HERE YOUR POST ID 
+    var refreshTime = 1; // Refresh time in seconds
+    var defaultCount = 0; // Default count to start with
+
+    var reactions = ['LIKE', 'LOVE', 'WOW', 'HAHA', 'SAD', 'ANGRY'].map(function (e) {
+        var code = 'reactions_' + e.toLowerCase();
+        return 'reactions.type(' + e + ').limit(0).summary(total_count).as(' + code + ')'
+    }).join(',');
+
+    var	v1 = $('.boy .counter'),
+    	v2 = $('.girl .counter'),
+        v3 = $('.sad .counter'),
+        v4 = $('.fml .counter'),
+        v5 = $('.angry .counter'),
+        v6 = $('.shock .counter'),
+        now_v1 ,
+        now_v2 ;
+
+    function refreshCounts() {
+        var url = 'https://graph.facebook.com/v2.8/?ids=' + postID + '&fields=comments.order(reverse_chronological)' + '&access_token=' + access_token;
+    	$.getJSON(url, function(res){
+            if(res[postID].comments.data[1].message == now_v1){
+                v2.text(res[postID].comments.data[0].message);
+                now_v2 = res[postID].comments.data[0].message;
+                v1.text(res[postID].comments.data[1].message);
+                now_v1 = res[postID].comments.data[1].message;
+            }else{
+                v1.text(res[postID].comments.data[0].message);
+                now_v1 = res[postID].comments.data[0].message;
+                v2.text(res[postID].comments.data[1].message);
+                now_v2 = res[postID].comments.data[1].message;
+            }
+
+    		
+    	});
+    }
+
+    $(document).ready(function(){
+        setInterval(refreshCounts, refreshTime * 1000);
+        refreshCounts();
+        //refreshComment();
+    });
+    </script>
+</body>
+</html>
